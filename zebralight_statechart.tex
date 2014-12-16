@@ -1,0 +1,143 @@
+\documentclass[a4paper, landscape, fontsize=10pt]{scrartcl}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{lmodern}
+\renewcommand{\familydefault}{\sfdefault}
+
+\usepackage[margin=5mm]{geometry}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata,calc,chains,trees,positioning,scopes}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\heading}[1]{\bfseries\Large#1}
+\newcommand{\click}{{\Large$\bullet$}}
+\newcommand{\press}{{\rule[2pt]{15pt}{4pt}}}
+
+\begin{document}
+\vspace*{\fill}
+\begin{center}
+    {\Huge\bfseries ZebraLight H52Fw State Chart} \\
+    (compatible with most other ZebraLights except for lumens)
+
+    \begin{tikzpicture}[node distance=4cm, ->, >=stealth', shorten >=1pt, auto, thick]
+        \tikzset{every node/.style={align=center}}
+        \tikzset{state/.style={draw, rectangle, rounded corners=8pt, inner sep=10pt, minimum size=15mm}}
+        \tikzset{substate/.style={draw, rectangle, rounded corners=8pt, inner sep=5pt}}
+
+        \path[use as bounding box] (-5.5,7.5) rectangle (22.5,-10);
+
+        \node [state] (off) {\heading{off}};
+
+        \node [state] (h1) [right=2cm of off] {\heading{H1}\\266 lm};
+        \node [state] (m1) [right=5cm of h1]  {\heading{M1}\\47 lm};
+        \node [state] (l1) [right=5cm of m1]  {\heading{L1}\\2.6 lm};
+
+        \node [state] (h2) [below of=h1] {\heading{H2}};
+        \node [state] (m2) [below of=m1] {\heading{M2}};
+        \node [state] (l2) [below of=l1] {\heading{L2}};
+
+        \node [state] (strobe1) [left=2cm of off]      {\heading{Strobe}\\4 Hz};
+        \node [state] (strobe2) [below of=strobe1] {\heading{Strobe}\\19 Hz};
+
+        \node [state] (batt) [above of=strobe1] {\heading{battery}\\\heading{check}\\1-4 flashes};
+
+        % switch off
+        \draw [black!15, dashed, bend right, swap]
+            (h1) edge [bend right=70] node {\click} (off)
+            (m1) edge [bend right=80] node {\click} (off)
+            (l1) edge [bend right=90] node {\click} (off)
+
+            (h2) edge [bend left] node {\click} (off)
+            (m2) edge [bend left=65, swap] node {\click} (off)
+            (l2) edge [bend left=80] node {\click} (off)
+
+            (strobe1) edge node {\click} (off)
+            (strobe2) edge node {\click} (off)
+
+            (batt) edge [bend right=10] (off)
+        ;
+
+        \draw [bend left=20]
+            (h1) edge node {\click\click} (h2)
+            (h2) edge node {\click\click} (h1)
+
+            (m1) edge node {\click\click} (m2)
+            (m2) edge node {\click\click} (m1)
+
+            (l1) edge node {\click\click} (l2)
+            (l2) edge node {\click\click} (l1)
+
+            (strobe1) edge node {\click\click} (strobe2)
+            (strobe2) edge node {\click\click} (strobe1)
+        ;
+
+        \draw
+            (off) edge node {\click*} (h1)
+            (off) edge [bend left] node {\click\click*} (m1)
+            (off) edge [bend left, out=40] node {\press*} (l1)
+            (l1) edge [swap] node {\press*} (m1)
+            (m1) edge [swap] node {\press*} (h1)
+            (h1) edge [bend left=15] node {\press*} (l1)
+            (off) edge [swap] node {\click\click\click*} (strobe1)
+            (off) edge [bend right=10, swap] node {\click\click\click\click} (batt)
+        ;
+
+        % programming mode
+        \begin{scope} [black!40]
+            \node [substate] (progh1) [right=2cm of h2] {163 lm};
+            \node [substate] (progh2) [above=1cm of progh1] {102 lm};
+
+            \node [substate] (progm1) [right=2cm of m2] {23 lm};
+            \node [substate] (progm2) [above=1cm of progm1] {11 lm};
+
+            \node [substate] (progl1) [right=2cm of l2] {0.32 lm};
+            \node [substate] (progl2) [above=1cm of progl1] {0.06 lm};
+            \node [substate] (progl3) [above=1cm of progl2] {0.01 lm};
+
+            \draw
+                (h2) edge node {\click\click\click\click\click\click} (progh1)
+                (progh2) edge [swap] node {\click\click} (progh1)
+                (progh1) edge [bend right=90, swap] node {\click\click} (progh2)
+                (progh1) edge [bend left] node {\click} (h2)
+                (progh2) edge [bend right] node {\click} (h2)
+
+                (m2) edge node {\click\click\click\click\click\click} (progm1)
+                (progm2) edge [swap] node {\click\click} (progm1)
+                (progm1) edge [bend right=90, swap] node {\click\click} (progm2)
+                (progm1) edge [bend left] node {\click} (m2)
+                (progm2) edge [bend right] node {\click} (m2)
+
+                (l2) edge node {\click\click\click\click\click\click} (progl1)
+                (progl2) edge [swap] node {\click\click} (progl1)
+                (progl3) edge [swap] node {\click\click} (progl2)
+                (progl1) edge [bend right=90, swap] node {\click\click} (progl3)
+                (progl1) edge [bend left] node {\click} (l2)
+                (progl3) edge [out=180, in=45] node {\click} (l2)
+            ;
+        \end{scope}
+
+        % symbology
+        \begin{scope}[shift={(-5,-7)}, y=7mm, x=20mm]
+            \draw (0,0) -- node {\click\click}  ++(1,0) coordinate (l1);
+            \draw (0,-1) -- node {\press}  ++(1,0) coordinate (l2);
+            \draw [black!15, dashed] (0,-2) -- node {\click}  ++(1,0) coordinate (l3);
+            \draw [black!40] (0,-3) -- node {\click\click\click\click\click\click}  ++(1,0) coordinate (l4);
+
+            \node [right=3mm of l1] {short press (2x)};
+            \node [right=3mm of l2] {press and hold};
+            \node [right=3mm of l3] {short press to switch off};
+            \node [right=3mm of l4] {programming mode};
+
+            \coordinate (l5) at (0,-4);
+            \node [right=0pt of l5, inner sep=1pt] {* selection of sub-level (X1/X2) is memorized};
+        \end{scope}
+    \end{tikzpicture}
+\end{center}
+\vfill
+\begin{tikzpicture}[overlay, remember picture]
+    \node at ($(current page.south east) + (-30mm,3mm)$) {\footnotesize created by Sven Greiner (\href{http://www.sammyshp.de/}{www.sammyshp.de})};
+\end{tikzpicture}
+\end{document}
