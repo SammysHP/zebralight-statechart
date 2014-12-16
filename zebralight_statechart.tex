@@ -27,7 +27,7 @@
         \tikzset{state/.style={draw, rectangle, rounded corners=8pt, inner sep=10pt, minimum size=15mm}}
         \tikzset{substate/.style={draw, rectangle, rounded corners=8pt, inner sep=5pt}}
 
-        \path[use as bounding box] (-5.5,7.5) rectangle (22.5,-10);
+        \path[use as bounding box] (-5.5,7.2) rectangle (22.5,-10);
 
         \node [state] (off) {\heading{off}};
 
@@ -45,17 +45,17 @@
         \node [state] (batt) [above of=strobe1] {\heading{battery}\\\heading{check}\\1-4 flashes};
 
         % switch off
-        \draw [black!15, dashed, bend right, swap]
+        \draw [black!15, dashed, swap]
             (h1) edge [bend right=70] node {\click} (off)
             (m1) edge [bend right=80] node {\click} (off)
             (l1) edge [bend right=90] node {\click} (off)
 
-            (h2) edge [bend left] node {\click} (off)
-            (m2) edge [bend left=65, swap] node {\click} (off)
-            (l2) edge [bend left=80] node {\click} (off)
+            (h2) edge [out=160, in=285, pos=0.3] node {\click} (off)
+            (m2) edge [out=220, in=285, looseness=1.15, swap, pos=0.25] node {\click} (off)
+            (l2) edge [out=210, in=285, looseness=1.2, swap, pos=0.5] node {\click} (off)
 
-            (strobe1) edge node {\click} (off)
-            (strobe2) edge node {\click} (off)
+            (strobe1) edge [bend right] node {\click} (off)
+            (strobe2) edge [bend right] node {\click} (off)
 
             (batt) edge [bend right=10] (off)
         ;
@@ -98,24 +98,30 @@
             \node [substate] (progl3) [above=1cm of progl2] {0.01 lm};
 
             \draw
-                (h2) edge node {\click\click\click\click\click\click} (progh1)
+                (h1) edge [out=310, in=90, pos=0.2] node {\click\click\click\click\click\click} (progh2)
                 (progh2) edge [swap] node {\click\click} (progh1)
                 (progh1) edge [bend right=90, swap] node {\click\click} (progh2)
-                (progh1) edge [bend left] node {\click} (h2)
-                (progh2) edge [bend right] node {\click} (h2)
 
-                (m2) edge node {\click\click\click\click\click\click} (progm1)
+                (m1) edge [out=310, in=90, pos=0.2] node {\click\click\click\click\click\click} (progm2)
                 (progm2) edge [swap] node {\click\click} (progm1)
                 (progm1) edge [bend right=90, swap] node {\click\click} (progm2)
-                (progm1) edge [bend left] node {\click} (m2)
-                (progm2) edge [bend right] node {\click} (m2)
 
-                (l2) edge node {\click\click\click\click\click\click} (progl1)
+                (l1) edge [out=0, in=180, pos=0.2] node {\click\click\click\click\click\click} (progl3)
                 (progl2) edge [swap] node {\click\click} (progl1)
                 (progl3) edge [swap] node {\click\click} (progl2)
                 (progl1) edge [bend right=90, swap] node {\click\click} (progl3)
-                (progl1) edge [bend left] node {\click} (l2)
-                (progl3) edge [out=180, in=45] node {\click} (l2)
+            ;
+
+            % save and switch off
+            \draw [black!15, dashed]
+                (progh1) to [out=180, in=30, pos=0.3] node {\click} (4.5,-6) coordinate (j1) to [out=210, in=270] (off)
+                (progh2) edge [-, out=180, in=30, pos=0.3] node {\click} (j1)
+
+                (progm1) to [out=180, in=30, pos=0.3] node {\click} (10,-7) coordinate (j2) to [out=210, in=270, looseness=1.17] (off)
+                (progm2) edge [-, out=180, in=30, pos=0.3] node {\click} (j2)
+
+                (progl1) to [out=180, in=30, pos=0.3] node {\click} (17,-6.5) coordinate (j3) to [out=210, in=270, looseness=1.2] (off)
+                (progl2) edge [-, out=180, in=30, pos=0.3] node {\click} (j3)
             ;
         \end{scope}
 
