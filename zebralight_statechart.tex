@@ -52,7 +52,7 @@
 
             (h2) edge [out=160, in=285, pos=0.3] node {\click} (off)
             (m2) edge [out=220, in=285, looseness=1.15, swap, pos=0.25] node {\click} (off)
-            (l2) edge [out=210, in=285, looseness=1.2, swap, pos=0.5] node {\click} (off)
+            (l2) edge [out=220, in=285, looseness=1.2, swap, pos=0.5] node {\click} (off)
 
             (strobe1) edge [bend right] node {\click} (off)
             (strobe2) edge [bend right] node {\click} (off)
@@ -87,10 +87,10 @@
 
         % programming mode
         \begin{scope} [black!40]
-            \node [substate] (progh1) [right=2cm of h2] {163 lm};
+            \node [substate] (progh1) [right=1.5cm of h2] {163 lm};
             \node [substate] (progh2) [above=1cm of progh1] {102 lm};
 
-            \node [substate] (progm1) [right=2cm of m2] {23 lm};
+            \node [substate] (progm1) [right=1.5cm of m2] {23 lm};
             \node [substate] (progm2) [above=1cm of progm1] {11 lm};
 
             \node [substate] (progl1) [right=2cm of l2] {0.32 lm};
@@ -106,7 +106,7 @@
                 (progm2) edge [swap] node {\click\click} (progm1)
                 (progm1) edge [bend right=90, swap] node {\click\click} (progm2)
 
-                (l1) edge [out=0, in=180, pos=0.2] node {\click\click\click\click\click\click} (progl3)
+                (l1) edge [out=0, in=90, pos=0.5, looseness=1.5] node {\click\click\click\click\click\click} (progl3)
                 (progl2) edge [swap] node {\click\click} (progl1)
                 (progl3) edge [swap] node {\click\click} (progl2)
                 (progl1) edge [bend right=90, swap] node {\click\click} (progl3)
@@ -115,31 +115,63 @@
             % save and switch off
             \draw [black!15, dashed]
                 (progh1) to [out=180, in=30, pos=0.3] node {\click} (4.5,-6) coordinate (j1) to [out=210, in=270] (off)
-                (progh2) edge [-, out=180, in=30, pos=0.3] node {\click} (j1)
+                (progh2) edge [-, out=180, in=30, pos=0.2] node {\click} (j1)
 
-                (progm1) to [out=180, in=30, pos=0.3] node {\click} (10,-7) coordinate (j2) to [out=210, in=270, looseness=1.17] (off)
-                (progm2) edge [-, out=180, in=30, pos=0.3] node {\click} (j2)
+                (progm1) to [out=180, in=30, pos=0.3] node {\click} (10.5,-7) coordinate (j2) to [out=210, in=270, looseness=1.17] (off)
+                (progm2) edge [-, out=180, in=30, pos=0.2] node {\click} (j2)
 
                 (progl1) to [out=180, in=30, pos=0.3] node {\click} (17,-6.5) coordinate (j3) to [out=210, in=270, looseness=1.2] (off)
-                (progl2) edge [-, out=180, in=30, pos=0.3] node {\click} (j3)
+                (progl2) edge [-, out=180, in=30, pos=0.25] node {\click} (j3)
+                (progl3) edge [-, out=180, in=30, pos=0.2] node {\click} (j3)
             ;
         \end{scope}
 
         % symbology
-        \begin{scope}[shift={(-5,-7)}, y=7mm, x=20mm]
-            \draw (0,0) -- node {\click\click}  ++(1,0) coordinate (l1);
-            \draw (0,-1) -- node {\press}  ++(1,0) coordinate (l2);
-            \draw [black!15, dashed] (0,-2) -- node {\click}  ++(1,0) coordinate (l3);
-            \draw [black!40] (0,-3) -- node {\click\click\click\click\click\click}  ++(1,0) coordinate (l4);
+        \begin{scope}[shift={(-5,-6.5)}, y=7mm, x=20mm]
+            \draw (0,0) -- node {\click\click}  ++(1,0) coordinate (label1);
+            \draw (0,-1) -- node {\press}  ++(1,0) coordinate (label2);
+            \draw [black!15, dashed] (0,-2) -- node {\click}  ++(1,0) coordinate (label3);
+            \draw [black!40] (0,-3) -- node {\click\click\click\click\click\click}  ++(1,0) coordinate (label4);
 
-            \node [right=3mm of l1] {short press (2x)};
-            \node [right=3mm of l2] {press and hold};
-            \node [right=3mm of l3] {short press to switch off};
-            \node [right=3mm of l4] {programming mode};
+            \node [right=3mm of label1] {short press (2x)};
+            \node [right=3mm of label2] {press and hold};
+            \node [right=3mm of label3] {short press to switch off};
+            \node [right=3mm of label4] {programming mode**};
 
-            \coordinate (l5) at (0,-4);
-            \node [right=0pt of l5, inner sep=1pt] {* selection of sub-level (X1/X2) is memorized};
+            \coordinate (label5) at (0,-4);
+            \coordinate (label6) at (0,-5);
+            \node [right=0pt of label5, inner sep=1pt] {* selection of sub-level (X1/X2) is memorized};
+            \node [right=0pt of label6, inner sep=1pt] {** selection of sub-level brightness is memorized};
         \end{scope}
+
+        % boxes
+        % \begin{pgfonlayer}{background}
+            \begin{scope}[rounded corners=10pt, dashed, black!40, -]
+                \draw
+                    ($(h2.north west)+(-5mm,5mm)$)
+                    -| ($(progh2.north west)+(-8mm,5mm)$)
+                    -- ($(progh2.north east)+(12mm,5mm)$)
+                    |- ($(h2.south west)+(-5mm,-5mm)$)
+                    -- cycle
+                ;
+
+                \draw
+                    ($(m2.north west)+(-5mm,5mm)$)
+                    -| ($(progm2.north west)+(-9mm,5mm)$)
+                    -- ($(progm2.north east)+(12mm,5mm)$)
+                    |- ($(m2.south west)+(-5mm,-5mm)$)
+                    -- cycle
+                ;
+
+                \draw
+                    ($(l2.north west)+(-5mm,5mm)$)
+                    -| ($(progl3.north west)+(-15mm,3mm)$)
+                    -- ($(progl3.north east)+(17mm,3mm)$)
+                    |- ($(l2.south west)+(-5mm,-5mm)$)
+                    -- cycle
+                ;
+            \end{scope}
+        % \end{pgfonlayer}
     \end{tikzpicture}
 \end{center}
 \vfill
