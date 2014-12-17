@@ -9,7 +9,7 @@
 \usepackage[margin=5mm]{geometry}
 \usepackage{xcolor}
 \usepackage{tikz}
-\usetikzlibrary{arrows,automata,calc,chains,trees,positioning,scopes}
+\usetikzlibrary{arrows,calc,positioning,backgrounds}
 \usepackage[hidelinks]{hyperref}
 
 \newcommand{\heading}[1]{\bfseries\Large#1}
@@ -145,7 +145,7 @@
         \end{scope}
 
         % boxes
-        % \begin{pgfonlayer}{background}
+        \begin{pgfonlayer}{background}
             \begin{scope}[rounded corners=10pt, dashed, black!40, -]
                 \draw
                     ($(h2.north west)+(-5mm,5mm)$)
@@ -171,7 +171,7 @@
                     -- cycle
                 ;
             \end{scope}
-        % \end{pgfonlayer}
+        \end{pgfonlayer}
     \end{tikzpicture}
 \end{center}
 \vfill
