@@ -1,4 +1,8 @@
-\documentclass[a4paper, landscape, fontsize=10pt]{scrartcl}
+\documentclass[
+    paper=A4,
+    landscape,
+    fontsize=10pt,
+]{scrartcl}
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -9,7 +13,7 @@
 \usepackage[margin=5mm]{geometry}
 \usepackage{xcolor}
 \usepackage{tikz}
-\usetikzlibrary{arrows,calc,positioning,backgrounds}
+\usetikzlibrary{arrows,calc,positioning}
 \usepackage[hidelinks]{hyperref}
 
 \newcommand{\heading}[1]{\bfseries\Large#1}
@@ -22,7 +26,11 @@
     {\Huge\bfseries ZebraLight H52Fw State Chart} \\
     (compatible with most other ZebraLights except for lumens)
 
-    \begin{tikzpicture}[node distance=4cm, ->, >=stealth', shorten >=1pt, auto, thick]
+    \pgfdeclarelayer{background}
+    \pgfdeclarelayer{arrows}
+    \pgfsetlayers{background,arrows,main}
+
+    \begin{tikzpicture}[node distance=4cm, ->, >=stealth', shorten >=1pt, shorten <=-.5pt, auto, thick]
         \tikzset{every node/.style={align=center}}
         \tikzset{state/.style={draw, rectangle, rounded corners=8pt, inner sep=10pt, minimum size=15mm}}
         \tikzset{substate/.style={draw, rectangle, rounded corners=8pt, inner sep=5pt}}
@@ -44,87 +52,92 @@
 
         \node [state] (batt) [above of=strobe1] {\heading{battery}\\\heading{check}\\1-4 flashes};
 
-        % switch off
-        \draw [black!15, dashed, swap]
-            (h1) edge [bend right=70] node {\click} (off)
-            (m1) edge [bend right=80] node {\click} (off)
-            (l1) edge [bend right=90] node {\click} (off)
+        \begin{pgfonlayer}{arrows}
+            % switch off
+            \draw [black!15, dashed, swap]
+                (h1) edge [bend right=70] node {\click} (off)
+                (m1) edge [bend right=80] node {\click} (off)
+                (l1) edge [bend right=90] node {\click} (off)
 
-            (h2) edge [out=160, in=285, pos=0.3] node {\click} (off)
-            (m2) edge [out=220, in=285, looseness=1.15, swap, pos=0.25] node {\click} (off)
-            (l2) edge [out=220, in=285, looseness=1.2, swap, pos=0.5] node {\click} (off)
+                (h2) edge [out=160, in=285, pos=0.3] node {\click} (off)
+                (m2) edge [out=220, in=285, looseness=1.15, swap, pos=0.25] node {\click} (off)
+                (l2) edge [out=220, in=285, looseness=1.2, swap, pos=0.5] node {\click} (off)
 
-            (strobe1) edge [bend right] node {\click} (off)
-            (strobe2) edge [bend right] node {\click} (off)
+                (strobe1) edge [bend right] node {\click} (off)
+                (strobe2) edge [bend right] node {\click} (off)
 
-            (batt) edge [bend right=10] (off)
-        ;
+                (batt) edge [bend right=10] (off)
+            ;
 
-        \draw [bend left=20]
-            (h1) edge node {\click\click} (h2)
-            (h2) edge node {\click\click} (h1)
+            \draw [bend left=20]
+                (h1) edge node {\click\click} (h2)
+                (h2) edge node {\click\click} (h1)
 
-            (m1) edge node {\click\click} (m2)
-            (m2) edge node {\click\click} (m1)
+                (m1) edge node {\click\click} (m2)
+                (m2) edge node {\click\click} (m1)
 
-            (l1) edge node {\click\click} (l2)
-            (l2) edge node {\click\click} (l1)
+                (l1) edge node {\click\click} (l2)
+                (l2) edge node {\click\click} (l1)
 
-            (strobe1) edge node {\click\click} (strobe2)
-            (strobe2) edge node {\click\click} (strobe1)
-        ;
+                (strobe1) edge node {\click\click} (strobe2)
+                (strobe2) edge node {\click\click} (strobe1)
+            ;
 
-        \draw
-            (off) edge node {\click*} (h1)
-            (off) edge [bend left] node {\click\click*} (m1)
-            (off) edge [bend left, out=40] node {\press*} (l1)
-            (l1) edge [swap] node {\press*} (m1)
-            (m1) edge [swap] node {\press*} (h1)
-            (h1) edge [bend left=15] node {\press*} (l1)
-            (off) edge [swap] node {\click\click\click*} (strobe1)
-            (off) edge [bend right=10, swap] node {\click\click\click\click} (batt)
-        ;
-
-        % programming mode
-        \begin{scope} [black!40]
-            \node [substate] (progh1) [right=1.5cm of h2] {163 lm};
-            \node [substate] (progh2) [above=1cm of progh1] {102 lm};
-
-            \node [substate] (progm1) [right=1.5cm of m2] {23 lm};
-            \node [substate] (progm2) [above=1cm of progm1] {11 lm};
-
-            \node [substate] (progl1) [right=2cm of l2] {0.32 lm};
-            \node [substate] (progl2) [above=1cm of progl1] {0.06 lm};
-            \node [substate] (progl3) [above=1cm of progl2] {0.01 lm};
+            \draw [shorten <=-2pt]
+                (off) edge [bend left, out=40] node {\press*} (l1)
+            ;
 
             \draw
-                (h1) edge [out=310, in=90, pos=0.2] node {\click\click\click\click\click\click} (progh2)
-                (progh2) edge [swap] node {\click\click} (progh1)
-                (progh1) edge [bend right=90, swap] node {\click\click} (progh2)
-
-                (m1) edge [out=310, in=90, pos=0.2] node {\click\click\click\click\click\click} (progm2)
-                (progm2) edge [swap] node {\click\click} (progm1)
-                (progm1) edge [bend right=90, swap] node {\click\click} (progm2)
-
-                (l1) edge [out=0, in=90, pos=0.5, looseness=1.5] node {\click\click\click\click\click\click} (progl3)
-                (progl2) edge [swap] node {\click\click} (progl1)
-                (progl3) edge [swap] node {\click\click} (progl2)
-                (progl1) edge [bend right=90, swap] node {\click\click} (progl3)
+                (off) edge node {\click*} (h1)
+                (off) edge [bend left] node {\click\click*} (m1)
+                (l1) edge [swap] node {\press*} (m1)
+                (m1) edge [swap] node {\press*} (h1)
+                (h1) edge [bend left=15] node {\press*} (l1)
+                (off) edge [swap] node {\click\click\click*} (strobe1)
+                (off) edge [bend right=10, swap] node {\click\click\click\click} (batt)
             ;
 
-            % save and switch off
-            \draw [black!15, dashed]
-                (progh1) to [out=180, in=30, pos=0.3] node {\click} (4.5,-6) coordinate (j1) to [out=210, in=270] (off)
-                (progh2) edge [-, out=180, in=30, pos=0.2] node {\click} (j1)
+            % programming mode
+            \begin{scope} [black!40]
+                \node [substate] (progh1) [right=1.5cm of h2] {163 lm};
+                \node [substate] (progh2) [above=1cm of progh1] {102 lm};
 
-                (progm1) to [out=180, in=30, pos=0.3] node {\click} (10.5,-7) coordinate (j2) to [out=210, in=270, looseness=1.17] (off)
-                (progm2) edge [-, out=180, in=30, pos=0.2] node {\click} (j2)
+                \node [substate] (progm1) [right=1.5cm of m2] {23 lm};
+                \node [substate] (progm2) [above=1cm of progm1] {11 lm};
 
-                (progl1) to [out=180, in=30, pos=0.3] node {\click} (17,-6.5) coordinate (j3) to [out=210, in=270, looseness=1.2] (off)
-                (progl2) edge [-, out=180, in=30, pos=0.25] node {\click} (j3)
-                (progl3) edge [-, out=180, in=30, pos=0.2] node {\click} (j3)
-            ;
-        \end{scope}
+                \node [substate] (progl1) [right=2cm of l2] {0.32 lm};
+                \node [substate] (progl2) [above=1cm of progl1] {0.06 lm};
+                \node [substate] (progl3) [above=1cm of progl2] {0.01 lm};
+
+                \draw
+                    (h1) edge [out=310, in=90, pos=0.2] node {\click\click\click\click\click\click} (progh2)
+                    (progh2) edge [swap] node {\click\click} (progh1)
+                    (progh1) edge [bend right=90, swap] node {\click\click} (progh2)
+
+                    (m1) edge [out=310, in=90, pos=0.2] node {\click\click\click\click\click\click} (progm2)
+                    (progm2) edge [swap] node {\click\click} (progm1)
+                    (progm1) edge [bend right=90, swap] node {\click\click} (progm2)
+
+                    (l1) edge [out=0, in=90, pos=0.5, looseness=1.5] node {\click\click\click\click\click\click} (progl3)
+                    (progl2) edge [swap] node {\click\click} (progl1)
+                    (progl3) edge [swap] node {\click\click} (progl2)
+                    (progl1) edge [bend right=90, swap] node {\click\click} (progl3)
+                ;
+
+                % save and switch off
+                \draw [black!15, dashed]
+                    (progh1) to [out=180, in=27, pos=0.3] node {\click} (4.5,-6) coordinate (j1) to [out=210, in=270] (off)
+                    (progh2) edge [-, out=180, in=35, pos=0.2] node {\click} (j1)
+
+                    (progm1) to [out=180, in=27, pos=0.3] node {\click} (10.5,-7) coordinate (j2) to [out=210, in=270, looseness=1.17] (off)
+                    (progm2) edge [-, out=180, in=35, pos=0.2] node {\click} (j2)
+
+                    (progl1) to [out=180, in=23, pos=0.3] node {\click} (17,-6.5) coordinate (j3) to [out=210, in=270, looseness=1.2] (off)
+                    (progl2) edge [-, out=180, in=27, pos=0.25] node {\click} (j3)
+                    (progl3) edge [-, out=180, in=35, pos=0.2] node {\click} (j3)
+                ;
+            \end{scope}
+        \end{pgfonlayer}
 
         % symbology
         \begin{scope}[shift={(-5,-6.5)}, y=7mm, x=20mm]
